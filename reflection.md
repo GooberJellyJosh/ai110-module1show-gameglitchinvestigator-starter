@@ -48,6 +48,12 @@ All rows are on Normal difficulty with the secret at 50 (read from the Developer
 - Give one example of an AI suggestion that was correct (including what the AI suggested and how you verified the result).
 - Give one example of an AI suggestion you did not accept as written (including what the AI suggested, why you rejected or changed it, and how you verified your version). It does not have to be a suggestion that was wrong: over-engineered, out of scope, harder to read, or a poor fit for this codebase all count.
 
+I used Claude Code in agent mode inside the project folder for the whole project. I gave it the assignment brief and my own ground rules: readable variable names and comments on the code. It replayed the starter game, logged the bugs, moved the logic into `logic_utils.py` and wrote the tests. Nothing was pushed to GitHub until it had told me what changed and I approved it.
+
+**A suggestion that was correct.** It traced the "9 is higher than 50" hint to `app.py` turning the secret into a string on every second attempt, which made `check_guess` compare the two values as text. Its fix was to convert both values to `int` inside `check_guess` so the comparison is always numeric. This was verified with two pytest cases, `check_guess(9, 50)` and `check_guess(9, "50")`, which both return `"Too Low"`. In the running game, with a secret of 65, a guess of 9 gave "Go HIGHER!".
+
+**A suggestion that was not accepted as written.** Its first fix for the stale "Attempts left" banner moved the Developer Debug Info panel to the bottom of the page, below the hint messages. All the tests passed, but in the live app the panel snapped shut after every guess, because its position on the page changed whenever a message appeared. That version was not kept. The messages are now drawn inside a fixed `st.container()` so the panel stays in place, which was checked by replaying several guesses with the panel open.
+
 ---
 
 ## 3. Debugging and testing your fixes
@@ -63,6 +69,8 @@ One example is `test_single_digit_guess_is_too_low_against_two_digit_secret`, wh
 Testing also showed me two things I was not looking for. The starter tests compare the result of `check_guess` to a single string like `"Win"`, but the original function returned an outcome and a message together, so I made `check_guess` return only the outcome and moved the hint text into `get_hint_message`. Running a plain `pytest` command failed with `ModuleNotFoundError: No module named 'logic_utils'` even though `python -m pytest` worked, which I fixed by adding a `pytest.ini` that puts the project folder on the import path. Playing the fixed game also caught something the tests could not: after I moved the debug panel below the messages, it snapped shut on every guess, so I put the messages in a fixed container to keep the panel in place.
 
 - Did AI help you design or understand any tests? How?
+
+Yes, it wrote the pytest cases: one for each bug in the reproduction log using the input that failed, plus edge cases for decimals, negative numbers and very large values. The tests explained two things about the code. The starter tests expect `check_guess` to return a single string, which is why the hint text was split out into `get_hint_message`. A plain `pytest` command also failed with `ModuleNotFoundError` until a `pytest.ini` was added. It also showed the limit of unit tests, since the debug panel problem only appeared when the game was played live.
 
 ---
 
@@ -82,3 +90,9 @@ The rerun order also explains two of the bugs. The page is drawn in the order th
   - This could be a testing habit, a prompting strategy, or a way you used Git.
 - What is one thing you would do differently next time you work with AI on a coding task?
 - In one or two sentences, describe how this project changed the way you think about AI generated code.
+
+**A habit to reuse.** Writing down each bug with the exact input, what I expected and what happened before changing any code. Each row of that log became a test, so I could tell a bug was fixed instead of assuming it. I also want to keep committing after each phase, so the history shows the bug log, the fixes and the documentation as separate steps.
+
+**What I would do differently.** I would work in smaller steps: one bug per request, and read the diff before moving on to the next one. This time the fixes for eight bugs landed in a single commit, which is a lot to review at once. I would also settle rule changes up front, like the new range for Hard, instead of finding out about them afterwards.
+
+**How this changed my thinking.** AI-generated code can look finished and still be wrong in ways that only show up when you run it. The starter game looked complete, and even one of the fixes passed every test while breaking the debug panel. I now treat it as a draft that has to be run and tested before I trust it.
