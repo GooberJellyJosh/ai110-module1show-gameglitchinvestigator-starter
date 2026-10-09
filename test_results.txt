@@ -1,0 +1,31 @@
+============================= test session starts ==============================
+collecting ... collected 26 items
+
+tests/test_game_logic.py::test_winning_guess PASSED                      [  3%]
+tests/test_game_logic.py::test_guess_too_high PASSED                     [  7%]
+tests/test_game_logic.py::test_guess_too_low PASSED                      [ 11%]
+tests/test_game_logic.py::test_too_high_hint_tells_player_to_go_lower PASSED [ 15%]
+tests/test_game_logic.py::test_too_low_hint_tells_player_to_go_higher PASSED [ 19%]
+tests/test_game_logic.py::test_single_digit_guess_is_too_low_against_two_digit_secret PASSED [ 23%]
+tests/test_game_logic.py::test_secret_passed_as_text_is_still_compared_as_a_number PASSED [ 26%]
+tests/test_game_logic.py::test_each_difficulty_has_its_own_range PASSED  [ 30%]
+tests/test_game_logic.py::test_harder_difficulty_has_a_wider_range PASSED [ 34%]
+tests/test_game_logic.py::test_unknown_difficulty_falls_back_to_default_range PASSED [ 38%]
+tests/test_game_logic.py::test_win_on_first_guess_scores_full_points PASSED [ 42%]
+tests/test_game_logic.py::test_win_loses_ten_points_per_earlier_guess PASSED [ 46%]
+tests/test_game_logic.py::test_win_is_always_worth_at_least_ten_points PASSED [ 50%]
+tests/test_game_logic.py::test_wrong_guess_costs_the_same_on_odd_and_even_attempts PASSED [ 53%]
+tests/test_game_logic.py::test_score_never_drops_below_zero PASSED       [ 57%]
+tests/test_game_logic.py::test_valid_guess_is_parsed_to_an_int PASSED    [ 61%]
+tests/test_game_logic.py::test_spaces_around_the_guess_are_ignored PASSED [ 65%]
+tests/test_game_logic.py::test_empty_guess_is_rejected PASSED            [ 69%]
+tests/test_game_logic.py::test_word_is_rejected PASSED                   [ 73%]
+tests/test_game_logic.py::test_decimal_guess_is_rejected_instead_of_rounded_down PASSED [ 76%]
+tests/test_game_logic.py::test_negative_guess_is_rejected_when_out_of_range PASSED [ 80%]
+tests/test_game_logic.py::test_extremely_large_guess_is_rejected_when_out_of_range PASSED [ 84%]
+tests/test_game_logic.py::test_guess_with_thousands_of_digits_does_not_crash PASSED [ 88%]
+tests/test_game_logic.py::test_infinity_and_nan_are_not_numbers PASSED   [ 92%]
+tests/test_game_logic.py::test_guesses_on_the_edge_of_the_range_are_accepted PASSED [ 96%]
+tests/test_game_logic.py::test_guesses_just_outside_the_range_are_rejected PASSED [100%]
+
+============================== 26 passed in 0.03s ==============================

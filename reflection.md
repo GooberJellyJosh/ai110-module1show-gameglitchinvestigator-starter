@@ -55,6 +55,13 @@ All rows are on Normal difficulty with the secret at 50 (read from the Developer
 - How did you decide whether a bug was really fixed?
 - Describe at least one test you ran (manual or using pytest)  
   and what it showed you about your code.
+
+I only counted a bug as fixed after seeing it pass in two places: a pytest case and the running game. Each bug in the reproduction log got a test that uses the same input that failed before the fix, so the test would have failed against the starter code. After that I replayed the same input in the app with the Developer Debug Info panel open, so I could compare the hint, the attempts left and the score against the secret.
+
+One example is `test_single_digit_guess_is_too_low_against_two_digit_secret`, which checks that `check_guess(9, 50)` returns `"Too Low"`. The old code compared the two values as text on every second attempt and decided 9 was higher than 50. A second test passes the secret in as the string `"50"` to prove the comparison stays numeric either way. In the app, guessing 80 then 9 against a secret of 65 gave "Go LOWER!" then "Go HIGHER!", the banner dropped from 8 to 7 to 6 straight away, and winning on the third guess scored 80.
+
+Testing also showed me two things I was not looking for. The starter tests compare the result of `check_guess` to a single string like `"Win"`, but the original function returned an outcome and a message together, so I made `check_guess` return only the outcome and moved the hint text into `get_hint_message`. Running a plain `pytest` command failed with `ModuleNotFoundError: No module named 'logic_utils'` even though `python -m pytest` worked, which I fixed by adding a `pytest.ini` that puts the project folder on the import path. Playing the fixed game also caught something the tests could not: after I moved the debug panel below the messages, it snapped shut on every guess, so I put the messages in a fixed container to keep the panel in place.
+
 - Did AI help you design or understand any tests? How?
 
 ---
@@ -62,6 +69,10 @@ All rows are on Normal difficulty with the secret at 50 (read from the Developer
 ## 4. What did you learn about Streamlit and state?
 
 - How would you explain Streamlit "reruns" and session state to a friend who has never used Streamlit?
+
+Every time you click a button, type in a box or change a dropdown, Streamlit runs the whole script again from the first line to the last. Any normal variable is created from scratch on each run, so a line like `secret = random.randint(1, 100)` would pick a new secret on every click. `st.session_state` is a dictionary that survives those reruns for one browser tab, so it is the place for anything the game has to remember: the secret, the attempts, the score, the status and the guess history. That is why the app only creates the secret when it is not already in the session state.
+
+The rerun order also explains two of the bugs. The page is drawn in the order the code runs, so the old "Attempts left" banner showed the count from before the guess, because it was drawn above the code that handled the guess. The fix was to reserve the banner's spot with `st.empty()` and fill it in at the end of the script. The New Game bug was the other side of the same idea: session state keeps everything until you change it, so resetting only the attempts and the secret left the old `"won"` status in place and the game stayed locked.
 
 ---
 
